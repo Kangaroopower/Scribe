@@ -130,7 +130,8 @@
 		reader.readAsBinaryString(file[0]);
 	};
 
-
+	//Aliases
+	Latte.fs = Latte.fileSelect;
 
 	window.Latte = Latte;
 
