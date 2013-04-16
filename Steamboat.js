@@ -1,16 +1,16 @@
-//Latte- File API library
+//Steamboat- File API library
 //CURENTLY IN ALPHA
 (function (window, undefined) {
 	//define some variables
 	var document = window.document,
-		Latte = {
-			version: '1.0 Polar Bear'
+		Steamboat = {
+			version: '1.0 Penguin'
 		};
 
 	/*** FILEREADER STUFF ***/
-	Latte.fileSelect = function (e) {
-		var Latte = e.target.Latte;
-		for (var i = 0, f; f = Latte[i]; i++) {
+	Steamboat.fileSelect = function (e) {
+		var Steamboat = e.target.Steamboat;
+		for (var i = 0, f; f = Steamboat[i]; i++) {
 			return {
 				'name': escape(f.name),
 				'type': f.type,
@@ -29,13 +29,13 @@
 		e.dataTransfer.dropEffect = 'copy';
 	};
 
-	Latte.drag = function (dropZone, ondrop) {
+	Steamboat.drag = function (dropZone, ondrop) {
 		dropZone.addEventListener('dragover', handleDrag, false);
 		dropZone.addEventListener('drop', ondrop, false);
 	};
 
-	Latte.loadimage = function (e) {
-		var f = Latte.fileSelect(e).obj;
+	Steamboat.loadimage = function (e) {
+		var f = Steamboat.fileSelect(e).obj;
 		if (!f.type.match('image.*')) {
 			return false;
 		}
@@ -50,14 +50,14 @@
 		})(f);
 	};
 
-	Latte.readBlob = function (el, start, stop) {
-		var Latte = document.querySelector(el).Latte;
-		if (!Latte.length) {
+	Steamboat.readBlob = function (el, start, stop) {
+		var Steamboat = document.querySelector(el).Steamboat;
+		if (!Steamboat.length) {
 			alert('Please select a file!');
 			return;
 		}
 
-		var file = Latte[0], reader = new FileReader();
+		var file = Steamboat[0], reader = new FileReader();
 		start = parseInt(start) || 0;
 		stop = parseInt(stop) || file.size - 1;
 
@@ -73,30 +73,30 @@
 		};
 	};
 
-	Latte.readBinary = function (file) {
+	Steamboat.readBinary = function (file) {
 		var reader = new FileReader();
 		return reader.readAsBinaryString(file);
 	};
 
-	Latte.readDataURL = function (file) {
+	Steamboat.readDataURL = function (file) {
 		var reader = new FileReader();
 		return reader.readAsDataURL(file);
 	};
 
-	Latte.readText = function (file) {
+	Steamboat.readText = function (file) {
 		var reader = new FileReader();
 		return reader.readAsText(file);
 	};
 
-	Latte.readBuffer = function (file) {
+	Steamboat.readBuffer = function (file) {
 		var reader = new FileReader();
 		return reader.readAsArrayBuffer(file);
 	};
 
-	Latte.slice = Latte.readBlob; //alias for readBlob
+	Steamboat.slice = Steamboat.readBlob; //alias for readBlob
 
-	Latte.monitor = function (e, start, progress, abortel) {
-		var file = Latte.fileSelect(e).obj, reader = new FileReader();
+	Steamboat.monitor = function (e, start, progress, abortel) {
+		var file = Steamboat.fileSelect(e).obj, reader = new FileReader();
 		reader.onerror = function (evt) {
 			switch(evt.target.error.code) {
 				case evt.target.error.NOT_FOUND_ERR:
@@ -131,8 +131,8 @@
 	};
 
 	//Aliases
-	Latte.fs = Latte.fileSelect;
+	Steamboat.fs = Steamboat.fileSelect;
 
-	window.Latte = Latte;
+	window.Steamboat = Steamboat;
 
 })(window, undefined);
