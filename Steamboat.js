@@ -9,7 +9,7 @@
 
 	/*** FILEREADER STUFF ***/
 	Steamboat.fileSelect = function (e) {
-		var Steamboat = e.target.Steamboat;
+		var Steamboat = e.target.files;
 		for (var i = 0, f; f = Steamboat[i]; i++) {
 			return {
 				'name': escape(f.name),
@@ -51,7 +51,7 @@
 	};
 
 	Steamboat.readBlob = function (el, start, stop) {
-		var Steamboat = document.querySelector(el).Steamboat;
+		var Steamboat = document.querySelector(el).files;
 		if (!Steamboat.length) {
 			alert('Please select a file!');
 			return;
