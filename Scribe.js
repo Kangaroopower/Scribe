@@ -1,16 +1,16 @@
-//Steamboat- File API library
+//Scribe- File API library
 //CURENTLY IN ALPHA
 (function (window, undefined) {
 	//define some variables
 	var document = window.document,
-		Steamboat = {
+		Scribe = {
 			version: '1.0 Penguin'
 		};
 
 	/*** FILEREADER STUFF ***/
-	Steamboat.fileSelect = function (e) {
-		var Steamboat = e.target.files;
-		for (var i = 0, f; f = Steamboat[i]; i++) {
+	Scribe.fileSelect = function (e) {
+		var Scribe = e.target.files;
+		for (var i = 0, f; f = Scribe[i]; i++) {
 			return {
 				'name': escape(f.name),
 				'type': f.type,
@@ -29,13 +29,13 @@
 		e.dataTransfer.dropEffect = 'copy';
 	};
 
-	Steamboat.drag = function (dropZone, ondrop) {
+	Scribe.drag = function (dropZone, ondrop) {
 		dropZone.addEventListener('dragover', handleDrag, false);
 		dropZone.addEventListener('drop', ondrop, false);
 	};
 
-	Steamboat.loadimage = function (e) {
-		var f = Steamboat.fileSelect(e).obj;
+	Scribe.loadimage = function (e) {
+		var f = Scribe.fileSelect(e).obj;
 		if (!f.type.match('image.*')) {
 			return false;
 		}
@@ -50,14 +50,14 @@
 		})(f);
 	};
 
-	Steamboat.readBlob = function (el, start, stop) {
-		var Steamboat = document.querySelector(el).files;
-		if (!Steamboat.length) {
+	Scribe.readBlob = function (el, start, stop) {
+		var Scribe = document.querySelector(el).files;
+		if (!Scribe.length) {
 			alert('Please select a file!');
 			return;
 		}
 
-		var file = Steamboat[0], reader = new FileReader();
+		var file = Scribe[0], reader = new FileReader();
 		start = parseInt(start) || 0;
 		stop = parseInt(stop) || file.size - 1;
 
@@ -73,30 +73,30 @@
 		};
 	};
 
-	Steamboat.readBinary = function (file) {
+	Scribe.readBinary = function (file) {
 		var reader = new FileReader();
 		return reader.readAsBinaryString(file);
 	};
 
-	Steamboat.readDataURL = function (file) {
+	Scribe.readDataURL = function (file) {
 		var reader = new FileReader();
 		return reader.readAsDataURL(file);
 	};
 
-	Steamboat.readText = function (file) {
+	Scribe.readText = function (file) {
 		var reader = new FileReader();
 		return reader.readAsText(file);
 	};
 
-	Steamboat.readBuffer = function (file) {
+	Scribe.readBuffer = function (file) {
 		var reader = new FileReader();
 		return reader.readAsArrayBuffer(file);
 	};
 
-	Steamboat.slice = Steamboat.readBlob; //alias for readBlob
+	Scribe.slice = Scribe.readBlob; //alias for readBlob
 
-	Steamboat.monitor = function (e, start, progress, abortel) {
-		var file = Steamboat.fileSelect(e).obj, reader = new FileReader();
+	Scribe.monitor = function (e, start, progress, abortel) {
+		var file = Scribe.fileSelect(e).obj, reader = new FileReader();
 		reader.onerror = function (evt) {
 			switch(evt.target.error.code) {
 				case evt.target.error.NOT_FOUND_ERR:
@@ -131,8 +131,8 @@
 	};
 
 	//Aliases
-	Steamboat.fs = Steamboat.fileSelect;
+	Scribe.fs = Scribe.fileSelect;
 
-	window.Steamboat = Steamboat;
+	window.Scribe = Scribe;
 
 })(window, undefined);
