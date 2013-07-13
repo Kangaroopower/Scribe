@@ -1,13 +1,15 @@
 //Scribe- File API library
-//CURENTLY IN ALPHA
+//CURENTLY IN ALPHA and buggy
 (function (window, undefined) {
 	//define some variables
 	var document = window.document,
 		Scribe = {
-			version: '1.0 Penguin'
+			version: '0.2 Penguin'
 		};
 
 	/*** FILEREADER STUFF ***/
+
+	//handles file selection
 	Scribe.fileSelect = function (e) {
 		var Scribe = e.target.files;
 		for (var i = 0, f; f = Scribe[i]; i++) {
@@ -16,13 +18,14 @@
 				'type': f.type,
 				'size': f.size,
 				'lastmodified': f.lastModifiedDate,
-				'obj': f
+				'contents': f
 
 			};
 		}
 		return false;
 	};
 
+	//handles file drag and drop
 	var handleDrag = function (e) {
 		e.stopPropagation();
 		e.preventDefault();
@@ -34,8 +37,9 @@
 		dropZone.addEventListener('drop', ondrop, false);
 	};
 
-	Scribe.loadimage = function (e) {
-		var f = Scribe.fileSelect(e).obj;
+	//Loads a file as a data url
+	Scribe.readDataURL = function (e) {
+		var f = Scribe.fileSelect(e).contents;
 		if (!f.type.match('image.*')) {
 			return false;
 		}
@@ -44,48 +48,40 @@
 		reader.readAsDataURL(f);
 		reader.onload = (function(theFile) {
 			return {
-				'file': theFile,
+				'file': e.target.result,
 				'name': escape(theFile.name)
 			};
 		})(f);
 	};
 
-	Scribe.readBlob = function (el, start, stop) {
-		var Scribe = document.querySelector(el).files;
-		if (!Scribe.length) {
-			alert('Please select a file!');
-			return;
-		}
+	//Loads an file as a binary string
+	Scribe.readBinary = function (start, stop) {
+		this.start = start;
+		this.stop = stop;
 
-		var file = Scribe[0], reader = new FileReader();
-		start = parseInt(start) || 0;
-		stop = parseInt(stop) || file.size - 1;
+		this.act = function (e) {
+			var fs = Scribe.fileSelect(e), file = fs.contents, reader = new FileReader();
+			this.start = parseInt(this.start) || 0;
+			this.stop = parseInt(this.stop) || fs.size - 1;
 
-		reader.onloadend = function(e) {
-			if (e.target.readyState === FileReader.DONE) {
-				return {
-					'content': reader.readAsBinaryString(file.slice(start, stop + 1)),
-					'start': start + 1,
-					'end': stop + 1,
-					'size': file.size
-				};
-			}
+			reader.onloadend = function(e) {
+				if (e.target.readyState === FileReader.DONE) {
+					return {
+						'content': e.target.result,
+						'start': this.start + 1,
+						'end': this.stop + 1,
+						'size': fs.size
+					};
+				}
+			};
+			reader.readAsBinaryString(file.slice(start, stop + 1));
 		};
 	};
 
-	Scribe.readBinary = function (file) {
+	// Read text and readbuffer currently don't work
+	Scribe.readText = function (file, encoding) {
 		var reader = new FileReader();
-		return reader.readAsBinaryString(file);
-	};
-
-	Scribe.readDataURL = function (file) {
-		var reader = new FileReader();
-		return reader.readAsDataURL(file);
-	};
-
-	Scribe.readText = function (file) {
-		var reader = new FileReader();
-		return reader.readAsText(file);
+		return reader.readAsText(file, encoding);
 	};
 
 	Scribe.readBuffer = function (file) {
@@ -93,41 +89,47 @@
 		return reader.readAsArrayBuffer(file);
 	};
 
-	Scribe.slice = Scribe.readBlob; //alias for readBlob
+	//Monitors a file upload
+	Scribe.monitor = function (start, progress, ondone, abortel) {
+		this.start = start;
+		this.progress = progress;
+		this.ondone = ondone;
+		this.abortel = abortel;
 
-	Scribe.monitor = function (e, start, progress, abortel) {
-		var file = Scribe.fileSelect(e).obj, reader = new FileReader();
-		reader.onerror = function (evt) {
-			switch(evt.target.error.code) {
-				case evt.target.error.NOT_FOUND_ERR:
-					alert('File Not Found!');
-					break;
-				case evt.target.error.NOT_READABLE_ERR:
-					alert('File is not readable');
-					break;
-				case evt.target.error.ABORT_ERR:
-					break; // noop
-				default:
-					alert('An error occurred reading this file.');
-			}
-		};
-		reader.onprogress = function(e) {
-			eval('progress(e);');
-		};
-		reader.onabort = function(e) {
-			alert('File read cancelled');
-		};
-		reader.onloadstart = function (e) {
-			eval('start(e);');
-		};
-		reader.onload = function (e) {
-			eval('ondone(e);');
-		};
+		this.act = function (e) {
+			var file = Scribe.fileSelect(e).contents, reader = new FileReader();
+			reader.onerror = function (evt) {
+				switch(evt.target.error.code) {
+					case evt.target.error.NOT_FOUND_ERR:
+						alert('File Not Found!');
+						break;
+					case evt.target.error.NOT_READABLE_ERR:
+						alert('File is not readable');
+						break;
+					case evt.target.error.ABORT_ERR:
+						break; // noop
+					default:
+						alert('An error occurred reading this file.');
+				}
+			};
+			reader.onprogress = function(e) {
+				eval('this.progress(e);');
+			};
+			reader.onabort = function(e) {
+				alert('File read cancelled');
+			};
+			reader.onloadstart = function (e) {
+				eval('this.start(e);');
+			};
+			reader.onload = function (e) {
+				eval('this.ondone(e);');
+			};
 
-		document.getElementById(abortel).onclick = reader.abort();
+			document.getElementById(this.abortel).onclick = reader.abort();
 
-		// Read in the image file as a binary string.
-		reader.readAsBinaryString(file[0]);
+			// Read in the image file as a binary string.
+			reader.readAsBinaryString(file[0]);
+		};
 	};
 
 	//Aliases
