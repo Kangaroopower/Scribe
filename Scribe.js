@@ -4,7 +4,7 @@
 	//define some variables
 	var document = window.document,
 		Scribe = {
-			version: '0.2 Penguin'
+			version: '0.21 Penguin'
 		};
 
 	/*** FILEREADER STUFF ***/
