@@ -11,8 +11,9 @@
 
 	//handles file selection
 	Scribe.fileSelect = function (e) {
-		var Scribe = e.target.files;
-		for (var i = 0, f; f = Scribe[i]; i++) {
+		var files = e.target.files;
+		for (var i = 0; i < files[i].length; i++) {
+			var f = files[i];
 			return {
 				'name': escape(f.name),
 				'type': f.type,
